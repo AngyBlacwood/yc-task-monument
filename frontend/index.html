@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Лифт</title>
+</head>
+<body>
+    <h1>Лифт</h1>
+    <blockquote>«Мы строим памятник себе,
+        <br>
+        рисуя в лифтах: "<i>здесь был я</i>"»</blockquote>
+    <h2>Добавить памятник</h2>
+    <form onsubmit="return addMonument();">
+        <p>Здесь
+            <br>
+            <label><input type="radio" id="m" name="gender" value="m" required>был</label>
+            <br>
+            <label><input type="radio" id="f" name="gender" value="f" required>была</label>
+            <br>
+            <label><input placeholder="кто?" id="name" name="name" required></label></p>
+        <button type="submit">Добавить памятник</button>
+    </form>
+    <h2>Памятники</h2>
+    <ul class="monuments-list">
+        <li class="monument-item">Здесь был я</li>
+    </ul>
+</body>
+<script>
+    window.onload = function updateMonuments() {
+        fetch('/monument')
+            .then(res => res.json())
+            .then(mes => {
+                mes.monuments.forEach(monument => {
+                    monument.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = "monument-item";
+                        li.textContent = item.textValue;
+                        document.querySelector(".monument-item:first-child").before(li);
+                    })
+                });
+            });
+    }
+
+    function addMonument() {
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const name = document.querySelector('input[name="name"]').value;
+        console.log(gender, name);
+        console.log(JSON.stringify({'gender': gender, 'name': name}));
+        fetch("/monument", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'gender': gender, 'name': name})
+        })
+            .then(res => res.json())
+            .then(_ => {
+                const li = document.createElement('li');
+                li.className = "monument-item";
+                li.textContent = `Здесь ${gender === 'm' ? 'был' : 'была'} ${name}`;
+                document.querySelector(".monument-item:first-child").before(li);
+            })
+        return false;
+    }
+</script>
+</html>

@@ -1,0 +1,1 @@
+aws --endpoint-url=https://storage.yandexcloud.net/ s3 cp ./index.html/ s3://lift-monument-storage/index.html
